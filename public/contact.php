@@ -1,5 +1,54 @@
 <?php
 
+require '../core/processContactForm.php';
+
+//Build the page metadata
+$meta = [];
+$meta['description'] = "The best thing about hello world is the greeting";
+$meta['keywords'] = "hello world, hello, world";
+
+$content = <<<EOT
+  <form action="contact.php" method="POST">
+    {$message}
+    <input type="hidden" name="subject" value="New submission!">
+    
+    <div class="form-control">
+    <label for="name">Name</label>
+      <input id="name" type="text" name="name" value="{$valid->userInput('name')}">
+      <div class="text-error">{$valid->error('name')}</div>
+    </div>
+    <div class="form-control">
+    <label for="email">Email</label>
+      <input id="email" type="text" name="email" value="{$valid->userInput('email')}">
+      <div class="text-error">{$valid->error('email')}</div>
+    </div>
+    <div class="form-control">
+    <label for="message">Message</label>
+      <textarea id="message" name="message">{$valid->userInput('message')}</textarea>
+      <div class="text-error">{$valid->error('message')}</div>
+    </div>
+    <div class="form-control">
+    <input type="submit" value="Send">
+    </div>
+  </form>
+  <script>
+    var toggleMenu = document.getElementById('toggleMenu');
+    var nav = document.querySelector('nav');
+    toggleMenu.addEventListener(
+      'click',
+      function(){
+        if(nav.style.display=='block'){
+          nav.style.display='none';
+        }else{
+          nav.style.display='block';
+        }
+      }
+    );
+  </script>
+EOT;
+
+include '../core/layout.php';
+
 // **** Implementation 1
 // Create a RegEx pattern to determine the validity of the use submitted email
 // - allow up to two strings with dot concatenation any letter, any case any number with _- before the @
@@ -97,152 +146,155 @@
 //   }
 // }
 
-// inclued non-vendor files
-require '../core/About/src/Validation/Validate.php';
 
-// declare included files in Namespace
-use About\Validation;
+// **** PRE- processContactForm.php
 
-// call namespace and invoke method
-$valid = new About\Validation\Validate();
+// // inclued non-vendor files
+// require '../core/About/src/Validation/Validate.php';
 
-$args = [
-  'name'=>FILTER_SANITIZE_STRING,
-  'subject'=>FILTER_SANITIZE_STRING,
-  'message'=>FILTER_SANITIZE_STRING,
-  'email'=>FILTER_SANITIZE_EMAIL,
-];
+// // declare included files in Namespace
+// use About\Validation;
 
-$input = filter_input_array(INPUT_POST, $args);
+// // call namespace and invoke method
+// $valid = new About\Validation\Validate();
 
-if(!empty($input)){
+// $args = [
+//   'name'=>FILTER_SANITIZE_STRING,
+//   'subject'=>FILTER_SANITIZE_STRING,
+//   'message'=>FILTER_SANITIZE_STRING,
+//   'email'=>FILTER_SANITIZE_EMAIL,
+// ];
 
-    $valid->validation = [
-        'email'=>[[
-                'rule'=>'email',
-                'message'=>'Please enter a valid email'
-            ],[
-                'rule'=>'notEmpty',
-                'message'=>'Please enter an email'
-        ]],
-        'name'=>[[
-            'rule'=>'notEmpty',
-            'message'=>'Please enter your first name'
-        ]],
-        'message'=>[[
-            'rule'=>'notEmpty',
-            'message'=>'Please add a message'
-        ]],
-    ];
+// $input = filter_input_array(INPUT_POST, $args);
 
-    $valid->check($input);
+// if(!empty($input)){
 
-    if(empty($valid->errors)){
-        $message = "<div class=\"message-success\">Your form has been submitted!</div>";
-        //header('Location: thanks.php');
-    }else{
-        $message = "<div class=\"message-error\">Your form has errors!</div>";
-    }
-}
-?>
+//     $valid->validation = [
+//         'email'=>[[
+//                 'rule'=>'email',
+//                 'message'=>'Please enter a valid email'
+//             ],[
+//                 'rule'=>'notEmpty',
+//                 'message'=>'Please enter an email'
+//         ]],
+//         'name'=>[[
+//             'rule'=>'notEmpty',
+//             'message'=>'Please enter your first name'
+//         ]],
+//         'message'=>[[
+//             'rule'=>'notEmpty',
+//             'message'=>'Please add a message'
+//         ]],
+//     ];
 
-<!DOCTYPE html>
+//     $valid->check($input);
 
-<html>
+//     if(empty($valid->errors)){
+//         $message = "<div class=\"message-success\">Your form has been submitted!</div>";
+//         //header('Location: thanks.php');
+//     }else{
+//         $message = "<div class=\"message-error\">Your form has errors!</div>";
+//     }
+// }
+// ?>
 
-  <head>
+<!-- // <!DOCTYPE html>
 
-    <meta lang='en'>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Kieran Milligan Contact Form Page">
-    <meta name="keywords" content="hello, introduction, intro, full-stack, web developer, full-stack web developer">
+// <html>
 
-    <link rel="stylesheet" type="text/css" href="./dist/css/main.min.css">
+//   <head>
 
-    <title>Kieran Milligan | Contact Me</title>
+//     <meta lang='en'>
+//     <meta charset="UTF-8">
+//     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//     <meta name="description" content="Kieran Milligan Contact Form Page">
+//     <meta name="keywords" content="hello, introduction, intro, full-stack, web developer, full-stack web developer">
+
+//     <link rel="stylesheet" type="text/css" href="./dist/css/main.min.css">
+
+//     <title>Kieran Milligan | Contact Me</title>
   
-  </head>
+//   </head>
 
 
-  <body>
-    <header>
-      <span class="logo">My Website</span>
-      <a id="toggleMenu">Menu</a>
-      <nav>
-        <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="resume.html">Resume</a></li>
-          <li><a href="contact.html">Contact</a></li>
-        </ul>
-      </nav>
-    </header>
+//   <body>
+//     <header>
+//       <span class="logo">My Website</span>
+//       <a id="toggleMenu">Menu</a>
+//       <nav>
+//         <ul>
+//           <li><a href="index.html">Home</a></li>
+//           <li><a href="resume.html">Resume</a></li>
+//           <li><a href="contact.html">Contact</a></li>
+//         </ul>
+//       </nav>
+//     </header>
       
-    <main> 
+//     <main> 
 
-      <div>
-        <h1>Contact Me!</h1>
-        <p>I would love to discuss how we can work together.</p>
-      </div>
+//       <div>
+//         <h1>Contact Me!</h1>
+//         <p>I would love to discuss how we can work together.</p>
+//       </div>
 
-      <?php echo (!empty($message)?$message:null); ?>
+//       <?php echo (!empty($message)?$message:null); ?>
 
-      <div class="card">
-        <form
-        action="contact.php"
-        method="POST"
-        >
-          <input type="hidden" name="subject" value="New submission!">
+//       <div class="card">
+//         <form
+//         action="contact.php"
+//         method="POST"
+//         >
+//           <input type="hidden" name="subject" value="New submission!">
 
-          <div>
-            <label for="name">Name:</label>
-            <br>
-            <input id="name" type="text" name="name" value="<?php echo $valid->userInput('name'); ?>">
-          </div>
+//           <div>
+//             <label for="name">Name:</label>
+//             <br>
+//             <input id="name" type="text" name="name" value="<?php echo $valid->userInput('name'); ?>">
+//           </div>
 
-          <div>
-            <label for="email">Email:</label>
-            <br>
-            <input id="email" type="text" name="email" value="<?php echo $valid->userInput('email'); ?>">  
-          </div>
+//           <div>
+//             <label for="email">Email:</label>
+//             <br>
+//             <input id="email" type="text" name="email" value="<?php echo $valid->userInput('email'); ?>">  
+//           </div>
 
-          <div>
-            <label for="message">Message:</label>
-            <br>
-            <textarea id="message" name="message"><?php echo $valid->userInput('message'); ?></textarea>
-            <div class="text-error">
-              <?php echo $valid->error('message'); ?>
-            </div>
-          </div>
+//           <div>
+//             <label for="message">Message:</label>
+//             <br>
+//             <textarea id="message" name="message"><?php echo $valid->userInput('message'); ?></textarea>
+//             <div class="text-error">
+//               <?php echo $valid->error('message'); ?>
+//             </div>
+//           </div>
 
-          <div>
-            Your file:
-            <input type="file" name="upload" accept="image/png, image/jpeg, image/jpg" >
-          </div>
+//           <div>
+//             Your file:
+//             <input type="file" name="upload" accept="image/png, image/jpeg, image/jpg" >
+//           </div>
 
-          <div>
-            <input type="submit" value="Send">
-          </div>
-          <input type="hidden" name="_next" value="//Kieran815.github.io/thanks.html">
-        </form>
-      </div>
+//           <div>
+//             <input type="submit" value="Send">
+//           </div>
+//           <input type="hidden" name="_next" value="//Kieran815.github.io/thanks.html">
+//         </form>
+//       </div>
 
-    </main>
+//     </main>
 
-    <script>
-      var toggleMenu = document.getElementById('toggleMenu');
-      var nav = document.querySelector('nav');
-      toggleMenu.addEventListener(
-        'click',
-        function(){
-          if(nav.style.display=='block'){
-            nav.style.display='none';
-          }else{
-            nav.style.display='block';
-          }
-        }
-      );
-    </script>
-  </body>
+//     <script>
+//       var toggleMenu = document.getElementById('toggleMenu');
+//       var nav = document.querySelector('nav');
+//       toggleMenu.addEventListener(
+//         'click',
+//         function(){
+//           if(nav.style.display=='block'){
+//             nav.style.display='none';
+//           }else{
+//             nav.style.display='block';
+//           }
+//         }
+//       );
+//     </script>
+//   </body>
 
-</html>
+// </html> -->
