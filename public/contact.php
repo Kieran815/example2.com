@@ -1,37 +1,149 @@
 <?php
 
-//Create a RegEx pattern to determine the validity of the use submitted email
+// **** Implementation 1
+// Create a RegEx pattern to determine the validity of the use submitted email
 // - allow up to two strings with dot concatenation any letter, any case any number with _- before the @
 // - require @
 // - allow up to two strings with dot concatenation any letter, any case any number with - after the at
 // - require at least 2 letters and only letters for the domain
-$validEmail = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/";
+// $validEmail = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/";
 
 //Extract $_POST to a data array
-$data = $_POST;
+// $data = $_POST;
 
 //Create an empty array to hold any error we detect
-$errors = [];
+// $errors = [];
 
-foreach($data as $key => $value){
-  echo "{$key} = {$value}<br><br>";
+// foreach($data as $key => $value){
+//   echo "{$key} = {$value}<br><br>";
 
-  switch($key){
-    case 'email':
-      if(preg_match($validEmail, $value) !== 1){
-        $errors[$key] = "Please Enter a Valid Email Address.";
-      }
-    break;
-    default:
-      if(empty($value)){
-        $errors[$key] = "Invalid {$key}";
-      }
-    break;
-  }
+//   switch($key){
+//     case 'email':
+//       if(preg_match($validEmail, $value) !== 1){
+//         $errors[$key] = "Please Enter a Valid Email Address.";
+//       }
+//     break;
+//     default:
+//       if(empty($value)){
+//         $errors[$key] = "Invalid {$key}";
+//       }
+//     break;
+//   }
+// }
+
+// var_dump($errors);
+
+//
+
+// Implementation 2
+// **** Moved to core/About/src/Validation/Validate.php
+// class Validate{
+
+//   public $validation = [];
+
+//   public $errors = [];
+
+//   private $data = [];
+
+//   public function notEmpty($value){
+
+//       if(!empty($value)){
+//           return true;
+//       }
+
+//       return false;
+
+//   }
+
+//   public function email($value){
+
+//       if(filter_var($value, FILTER_VALIDATE_EMAIL)){
+//           return true;
+//       }
+
+//       return false;
+
+//   }
+
+//   public function check($data){
+
+//       $this->data = $data;
+
+//       foreach(array_keys($this->validation) as $fieldName){
+
+//           $this->rules($fieldName);
+//       }
+
+//   }
+
+//   public function rules($field){
+//       foreach($this->validation[$field] as $rule){
+//           if($this->{$rule['rule']}($this->data[$field]) === false){
+//               $this->errors[$field] = $rule;
+//           }
+//       }
+//   }
+
+//   public function error($field){
+//       if(!empty($this->errors[$field])){
+//           return $this->errors[$field]['message'];
+//       }
+
+//       return false;
+//   }
+
+//   public function userInput($key){
+//       return (!empty($this->data[$key])?$this->data[$key]:null);
+//   }
+// }
+
+// inclued non-vendor files
+require '../core/About/src/Validation/Validate.php';
+
+// declare included files in Namespace
+use About\Validation;
+
+// call namespace and invoke method
+$valid = new About\Validation\Validate();
+
+$args = [
+  'name'=>FILTER_SANITIZE_STRING,
+  'subject'=>FILTER_SANITIZE_STRING,
+  'message'=>FILTER_SANITIZE_STRING,
+  'email'=>FILTER_SANITIZE_EMAIL,
+];
+
+$input = filter_input_array(INPUT_POST, $args);
+
+if(!empty($input)){
+
+    $valid->validation = [
+        'email'=>[[
+                'rule'=>'email',
+                'message'=>'Please enter a valid email'
+            ],[
+                'rule'=>'notEmpty',
+                'message'=>'Please enter an email'
+        ]],
+        'name'=>[[
+            'rule'=>'notEmpty',
+            'message'=>'Please enter your first name'
+        ]],
+        'message'=>[[
+            'rule'=>'notEmpty',
+            'message'=>'Please add a message'
+        ]],
+    ];
+
+    $valid->check($input);
+
+    if(empty($valid->errors)){
+        $message = "<div class=\"message-success\">Your form has been submitted!</div>";
+        //header('Location: thanks.php');
+    }else{
+        $message = "<div class=\"message-error\">Your form has errors!</div>";
+    }
 }
-
-var_dump($errors);
-
 ?>
 
 <!DOCTYPE html>
@@ -45,6 +157,7 @@ var_dump($errors);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Kieran Milligan Contact Form Page">
     <meta name="keywords" content="hello, introduction, intro, full-stack, web developer, full-stack web developer">
+
     <link rel="stylesheet" type="text/css" href="./dist/css/main.min.css">
 
     <title>Kieran Milligan | Contact Me</title>
@@ -65,11 +178,14 @@ var_dump($errors);
       </nav>
     </header>
       
-    <div>    
+    <main> 
+
       <div>
         <h1>Contact Me!</h1>
         <p>I would love to discuss how we can work together.</p>
       </div>
+
+      <?php echo (!empty($message)?$message:null); ?>
 
       <div class="card">
         <form
@@ -81,19 +197,22 @@ var_dump($errors);
           <div>
             <label for="name">Name:</label>
             <br>
-            <input id="name" type="text" name="name">
+            <input id="name" type="text" name="name" value="<?php echo $valid->userInput('name'); ?>">
           </div>
 
           <div>
             <label for="email">Email:</label>
             <br>
-            <input id="email" type="text" name="email">  
+            <input id="email" type="text" name="email" value="<?php echo $valid->userInput('email'); ?>">  
           </div>
 
           <div>
             <label for="message">Message:</label>
             <br>
-            <textarea id="message" name="message" width=50 height=4 placeholder="How can I help you?"></textarea>
+            <textarea id="message" name="message"><?php echo $valid->userInput('message'); ?></textarea>
+            <div class="text-error">
+              <?php echo $valid->error('message'); ?>
+            </div>
           </div>
 
           <div>
@@ -107,7 +226,8 @@ var_dump($errors);
           <input type="hidden" name="_next" value="//Kieran815.github.io/thanks.html">
         </form>
       </div>
-    </div>
+
+    </main>
 
     <script>
       var toggleMenu = document.getElementById('toggleMenu');
