@@ -2,15 +2,15 @@
 require '../core/About/src/Validation/Validate.php';
 include '../vendor/autoload.php';
 require '../config/keys.php';
-use Mailgun\Mailgun;
 use About\Validation;
 
 $valid = new About\Validation\Validate();
 
 $filters = [
-    'name'=>FILTER_SANITIZE_STRING,
-    'email'=>FILTER_SANITIZE_EMAIL,
-    'message'=>FILTER_SANITIZE_STRING,
+  'title'=>FILTER_SANITIZE_STRING, //strips HMTL
+  'meta_description'=>FILTER_SANITIZE_STRING, //strips HMTL
+  'meta_keywords'=>FILTER_SANITIZE_STRING, //strips HMTL
+  'body'=>FILTER_UNSAFE_RAW  //NULL FILTER
 ];
 $input = filter_input_array(INPUT_POST, $filters);
 
@@ -36,29 +36,9 @@ if(!empty($input)){
   $valid->check($input);
 
   if(empty($valid->errors)){
-
-  # Instantiate the client.
-  $mgClient = Mailgun::create(MG_KEY,MG_API); //MailGun key 
-  $domain = MG_DOMAIN; //API Hostname
-  $from = "Mailgun Sandbox <postmaster@{$domain}>";
-
-  # Make the call to the client.
-  $result = $mgClient->messages()->send(
-    $domain,
-    array (  
-        'from'    => "{$input['name']} <{$input['email']}>",      
-        'to'      => 'Kieran Milligan <kieran.milligan@gmail.com>',
-        'subject' => 'Mailgun Submission',
-        'text'    => $input['message']
-    )
-  );
-
-  /* Use To Show Input When Needed
-  var_dump($result);
-  */
-
-  $message = "<div class=\"message-success\">Your form has been submitted!</div>";
+    $message = "<div class=\"message-success\">Your post has been submitted!</div>";
   }else{
     $message = "<div class=\"message-error\">Your form has errors!</div>";
   }
 }
+?>
