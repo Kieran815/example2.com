@@ -1,12 +1,19 @@
 <?php
-include '../../core/db_connect.php';
+require '../../core/functions.php';
 require '../../core/bootstrap.php';
+require '../../core/db_connect.php';
 
-$content=null;
-$stmt = $pdo->query("SELECT * FROM users");
+$meta=[];
+$meta['title']="Users";
 
-while ($row = $stmt->fetch()){
-  $content .= "<a href=\"view.php?slug={$row['id']}\">{$row['first_name']}</a><br />";
+$content="<h1>Users</h1>";
+$stmt = $pdo->query('SELECT * FROM users');
+
+while($row = $stmt->fetch()){
+  $content .= "<div><a href=\"users/view.php?id={$row['id']}\">" .
+    "{$row['first_name']} {$row['last_name']}</a></div>";
 }
 
-include '../../core/layout.php';
+$content .= "<br><br><hr><div><a href=\"users/add.php\">New User</a></div>";
+
+require '../../core/layout.php';

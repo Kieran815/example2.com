@@ -30,7 +30,7 @@ if(!empty($input)){
             $_SESSION['user']['id']=$row['id'];
 
             // 6.2 Redirect the user
-            header('LOCATION: ' . $_POST['goto']);
+            header('LOCATION: ' . $_POST['../public/']);
         }
     }
 }

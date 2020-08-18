@@ -2,17 +2,18 @@
 require '../core/About/src/Validation/Validate.php';
 include '../vendor/autoload.php';
 require '../config/keys.php';
-use Mailgun\Mailgun;
 use About\Validation;
 
+$message = null;
 $valid = new About\Validation\Validate();
 
-$filters = [
-    'name'=>FILTER_SANITIZE_STRING,
-    'email'=>FILTER_SANITIZE_EMAIL,
-    'message'=>FILTER_SANITIZE_STRING,
+$args = [
+  'name'=>FILTER_SANITIZE_STRING,
+  'email'=>FILTER_SANITIZE_EMAIL,
+  'subject'=>FILTER_SANITIZE_STRING,
+  'message'=>FILTER_SANITIZE_STRING
 ];
-$input = filter_input_array(INPUT_POST, $filters);
+$input = filter_input_array(INPUT_POST, $args);
 
 if(!empty($input)){
   $valid->validation = [
@@ -36,29 +37,35 @@ if(!empty($input)){
   $valid->check($input);
 
   if(empty($valid->errors)){
-
-  # Instantiate the client.
-  $mgClient = Mailgun::create(MG_KEY,MG_API); //MailGun key 
-  $domain = MG_DOMAIN; //API Hostname
-  $from = "Mailgun Sandbox <postmaster@{$domain}>";
-
-  # Make the call to the client.
-  $result = $mgClient->messages()->send(
-    $domain,
-    array (  
-        'from'    => "{$input['name']} <{$input['email']}>",      
-        'to'      => 'Kieran Milligan <kieran.milligan@gmail.com>',
-        'subject' => 'Mailgun Submission',
-        'text'    => $input['message']
-    )
-  );
-
-  /* Use To Show Input When Needed
-  var_dump($result);
-  */
-
-  $message = "<div class=\"message-success\">Your form has been submitted!</div>";
+    header('LOCATION: thanks.php');
   }else{
-    $message = "<div class=\"message-error\">Your form has errors!</div>";
+    $message = "<div class=\"alert alert-danger\">Your form has errors!</div>";
   }
 }
+
+  // if(empty($valid->errors)){
+
+  // # Instantiate the client.
+  // $mgClient = Mailgun::create(MG_KEY,MG_API); //MailGun key 
+  // $domain = MG_DOMAIN; //API Hostname
+  // $from = "Mailgun Sandbox <postmaster@{$domain}>";
+
+  // # Make the call to the client.
+  // $result = $mgClient->messages()->send(
+  //   $domain,
+  //   array (  
+  //       'from'    => "{$input['name']} <{$input['email']}>",      
+  //       'to'      => 'Kieran Milligan <kieran.milligan@gmail.com>',
+  //       'subject' => 'Mailgun Submission',
+  //       'text'    => $input['message']
+  //   )
+  // );
+
+  // /* Use To Show Input When Needed
+  // var_dump($result);
+  // */
+
+  // $message = "<div class=\"message-success\">Your form has been submitted!</div>";
+  // }else{
+  //   $message = "<div class=\"message-error\">Your form has errors!</div>";
+  // }

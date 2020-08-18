@@ -1,6 +1,6 @@
-<!DOCTYPE html>
+<!DOCTYPE.php>
 
-<html>
+.php>
 
   <head>
     
@@ -23,8 +23,8 @@
       <a id="toggleMenu">Menu</a>
       <nav>
           <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="resume.html">Resume</a></li>
+            <li><a href="index.php">Home</a></li>
+            <li><a href="resume.php">Resume</a></li>
             <li><a href="contact.php">Contact</a></li>
           </ul>
       </nav>
@@ -156,4 +156,4 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
   </body>
 
-</html>
+<.php>

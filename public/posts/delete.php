@@ -1,6 +1,6 @@
 <?php
-require '../../core/bootstrap.php';
 require '../../core/functions.php';
+require '../../core/bootstrap.php';
 require '../../core/db_connect.php';
 
 $args=[

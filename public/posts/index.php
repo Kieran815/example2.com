@@ -1,12 +1,18 @@
 <?php
-include '../../core/db_connect.php';
+require '../../core/functions.php';
 require '../../core/bootstrap.php';
+require '../../core/db_connect.php';
 
-$content=null;
-$stmt = $pdo->query("SELECT * FROM posts");
+$meta=[];
+$meta['title']="Bob's Blog";
 
-while ($row = $stmt->fetch()){
-  $content .= "<a href=\"view.php?slug={$row['slug']}\">{$row['title']}</a><br />";
+$content="<h1>Blogs Posts</h1>";
+$stmt = $pdo->query('SELECT * FROM posts');
+
+while($row = $stmt->fetch()){
+  $content .= "<div><a href=\"posts/view.php?slug={$row['slug']}\">{$row['title']}</a></div>";
 }
 
-include '../../core/layout.php';
+$content .= "<br><br><hr><div><a href=\"posts/add.php\">New Post</a></div>";
+
+require '../../core/layout.php';
