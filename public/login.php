@@ -31,6 +31,8 @@ if(!empty($input)){
 
             // 6.2 Redirect the user
             header('LOCATION: ' . $_POST['../public/']);
+        }else{
+            print "<h2>Invalid Login Information</h2>";
         }
     }
 }

@@ -5,7 +5,7 @@ session_start();
 //Redirects a user to a login page if there is no active session
 function checkSession(){
 
-  $goto='/';
+  $goto='../public/index.php';
   $hasSession=false;
   if(!empty($_SESSION['user']['id'])){
     $hasSession=true;
